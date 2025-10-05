@@ -203,3 +203,124 @@ export function downloadBinary(data: Uint8Array, filename: string) {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// Password-based encryption types
+export interface PasswordEncryptedEnvelope {
+  filename: string;
+  salt: string;
+  nonce: string;
+  tag: string;
+  ciphertext: string;
+  sha256: string;
+}
+
+// Derive AES key from password using PBKDF2
+async function deriveKeyFromPassword(password: string, salt: Uint8Array): Promise<CryptoKey> {
+  const encoder = new TextEncoder();
+  const passwordKey = await window.crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    { name: "PBKDF2" },
+    false,
+    ["deriveKey"]
+  );
+
+  const derivedKey = await window.crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt: salt,
+      iterations: 100000,
+      hash: "SHA-256"
+    },
+    passwordKey,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"]
+  );
+
+  return derivedKey;
+}
+
+// Encrypt file with password-based encryption
+export async function encryptFileWithPassword(
+  fileData: ArrayBuffer,
+  filename: string,
+  password: string
+): Promise<PasswordEncryptedEnvelope> {
+  const plaintext = new Uint8Array(fileData);
+  
+  // Calculate SHA-256 fingerprint
+  const sha256 = await sha256Hex(plaintext);
+  
+  // Generate random salt (16 bytes)
+  const salt = window.crypto.getRandomValues(new Uint8Array(16));
+  
+  // Derive AES key from password
+  const aesKey = await deriveKeyFromPassword(password, salt);
+  
+  // Generate random IV/nonce (12 bytes for GCM)
+  const nonce = window.crypto.getRandomValues(new Uint8Array(12));
+  
+  // Encrypt with AES-GCM
+  const encryptedData = await window.crypto.subtle.encrypt(
+    { name: "AES-GCM", iv: nonce },
+    aesKey,
+    plaintext
+  );
+  
+  // Split encrypted data into ciphertext and tag (last 16 bytes)
+  const encryptedArray = new Uint8Array(encryptedData);
+  const ciphertext = encryptedArray.slice(0, -16);
+  const tag = encryptedArray.slice(-16);
+  
+  // Create envelope
+  const envelope: PasswordEncryptedEnvelope = {
+    filename,
+    salt: btoa(String.fromCharCode(...salt)),
+    nonce: btoa(String.fromCharCode(...nonce)),
+    tag: btoa(String.fromCharCode(...tag)),
+    ciphertext: btoa(String.fromCharCode(...ciphertext)),
+    sha256,
+  };
+  
+  return envelope;
+}
+
+// Decrypt file with password-based decryption
+export async function decryptFileWithPassword(
+  envelope: PasswordEncryptedEnvelope,
+  password: string
+): Promise<{ data: Uint8Array; filename: string; sha256Valid: boolean }> {
+  // Decode base64 fields
+  const salt = Uint8Array.from(atob(envelope.salt), c => c.charCodeAt(0));
+  const nonce = Uint8Array.from(atob(envelope.nonce), c => c.charCodeAt(0));
+  const tag = Uint8Array.from(atob(envelope.tag), c => c.charCodeAt(0));
+  const ciphertext = Uint8Array.from(atob(envelope.ciphertext), c => c.charCodeAt(0));
+  
+  // Derive AES key from password
+  const aesKey = await deriveKeyFromPassword(password, salt);
+  
+  // Combine ciphertext and tag for GCM
+  const encryptedData = new Uint8Array(ciphertext.length + tag.length);
+  encryptedData.set(ciphertext, 0);
+  encryptedData.set(tag, ciphertext.length);
+  
+  // Decrypt with AES-GCM
+  const decryptedData = await window.crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: nonce },
+    aesKey,
+    encryptedData
+  );
+  
+  const plaintext = new Uint8Array(decryptedData);
+  
+  // Verify SHA-256
+  const actualSha256 = await sha256Hex(plaintext);
+  const sha256Valid = actualSha256 === envelope.sha256;
+  
+  return {
+    data: plaintext,
+    filename: envelope.filename,
+    sha256Valid,
+  };
+}

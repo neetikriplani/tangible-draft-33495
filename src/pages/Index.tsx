@@ -2,6 +2,9 @@ import { Shield } from "lucide-react";
 import { KeyGeneration } from "@/components/KeyGeneration";
 import { FileEncryption } from "@/components/FileEncryption";
 import { FileDecryption } from "@/components/FileDecryption";
+import { PasswordFileEncryption } from "@/components/PasswordFileEncryption";
+import { PasswordFileDecryption } from "@/components/PasswordFileDecryption";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Index = () => {
   return (
@@ -19,57 +22,116 @@ const Index = () => {
             Secure File Storage
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto relative">
-            Hybrid cryptography using AES-256-GCM + RSA-OAEP with SHA-256 fingerprinting for secure file encryption and decryption
+            Hybrid RSA encryption or password-based AES-256-GCM encryption with SHA-256 fingerprinting for secure file protection
           </p>
         </div>
 
         {/* Main Grid */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-1">
-            <KeyGeneration />
-          </div>
+        <Tabs defaultValue="rsa" className="mb-8">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6">
+            <TabsTrigger value="rsa">RSA Encryption</TabsTrigger>
+            <TabsTrigger value="password">Password Encryption</TabsTrigger>
+          </TabsList>
           
-          <div className="lg:col-span-1">
-            <FileEncryption />
-          </div>
+          <TabsContent value="rsa">
+            <div className="grid lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-1">
+                <KeyGeneration />
+              </div>
+              
+              <div className="lg:col-span-1">
+                <FileEncryption />
+              </div>
+              
+              <div className="lg:col-span-1">
+                <FileDecryption />
+              </div>
+            </div>
+          </TabsContent>
           
-          <div className="lg:col-span-1">
-            <FileDecryption />
-          </div>
-        </div>
+          <TabsContent value="password">
+            <div className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              <div className="lg:col-span-1">
+                <PasswordFileEncryption />
+              </div>
+              
+              <div className="lg:col-span-1">
+                <PasswordFileDecryption />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Info Section */}
         <div className="max-w-4xl mx-auto">
           <div className="bg-card/50 backdrop-blur border border-border rounded-2xl p-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[hsl(195,100%,50%)]/5 rounded-full blur-3xl" />
             <h2 className="text-2xl font-bold mb-6 relative bg-gradient-to-r from-[hsl(195,100%,50%)] to-[hsl(270,70%,60%)] bg-clip-text text-transparent">How It Works</h2>
-            <div className="grid md:grid-cols-3 gap-8 text-sm relative">
-              <div className="group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[hsl(195,100%,50%)]/20 to-[hsl(195,100%,50%)]/5 text-[hsl(195,100%,50%)] flex items-center justify-center text-base font-bold border border-[hsl(195,100%,50%)]/30 group-hover:glow-cyan transition-all">1</div>
-                  <h3 className="font-bold text-base">Generate Keys</h3>
+            <div className="grid md:grid-cols-2 gap-6 text-sm relative mb-6">
+              <div className="space-y-4">
+                <h3 className="font-bold text-lg text-[hsl(195,100%,50%)]">RSA Encryption</h3>
+                <div className="space-y-3">
+                  <div className="group">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(195,100%,50%)]/20 to-[hsl(195,100%,50%)]/5 text-[hsl(195,100%,50%)] flex items-center justify-center text-sm font-bold border border-[hsl(195,100%,50%)]/30">1</div>
+                      <h4 className="font-bold text-sm">Generate Keys</h4>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed text-xs pl-11">
+                      Create a 2048-bit RSA key pair. Share the public key, keep the private key secure.
+                    </p>
+                  </div>
+                  <div className="group">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(270,70%,60%)]/20 to-[hsl(270,70%,60%)]/5 text-[hsl(270,70%,60%)] flex items-center justify-center text-sm font-bold border border-[hsl(270,70%,60%)]/30">2</div>
+                      <h4 className="font-bold text-sm">Encrypt</h4>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed text-xs pl-11">
+                      Upload file and recipient's public key. Get encrypted JSON envelope.
+                    </p>
+                  </div>
+                  <div className="group">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(142,76%,45%)]/20 to-[hsl(142,76%,45%)]/5 text-[hsl(142,76%,45%)] flex items-center justify-center text-sm font-bold border border-[hsl(142,76%,45%)]/30">3</div>
+                      <h4 className="font-bold text-sm">Decrypt</h4>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed text-xs pl-11">
+                      Upload envelope and private key to recover the original file.
+                    </p>
+                  </div>
                 </div>
-                <p className="text-muted-foreground leading-relaxed">
-                  Create a 2048-bit RSA key pair. Download both keys - share the public key, keep the private key secure.
-                </p>
               </div>
-              <div className="group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[hsl(270,70%,60%)]/20 to-[hsl(270,70%,60%)]/5 text-[hsl(270,70%,60%)] flex items-center justify-center text-base font-bold border border-[hsl(270,70%,60%)]/30 group-hover:glow-purple transition-all">2</div>
-                  <h3 className="font-bold text-base">Encrypt</h3>
+
+              <div className="space-y-4">
+                <h3 className="font-bold text-lg text-[hsl(45,93%,47%)]">Password Encryption</h3>
+                <div className="space-y-3">
+                  <div className="group">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(45,93%,47%)]/20 to-[hsl(45,93%,47%)]/5 text-[hsl(45,93%,47%)] flex items-center justify-center text-sm font-bold border border-[hsl(45,93%,47%)]/30">1</div>
+                      <h4 className="font-bold text-sm">Choose Password</h4>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed text-xs pl-11">
+                      Create a strong password. The strength indicator helps you choose securely.
+                    </p>
+                  </div>
+                  <div className="group">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(45,93%,47%)]/20 to-[hsl(45,93%,47%)]/5 text-[hsl(45,93%,47%)] flex items-center justify-center text-sm font-bold border border-[hsl(45,93%,47%)]/30">2</div>
+                      <h4 className="font-bold text-sm">Encrypt</h4>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed text-xs pl-11">
+                      Upload file and enter password. File is encrypted with AES-256-GCM.
+                    </p>
+                  </div>
+                  <div className="group">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(45,93%,47%)]/20 to-[hsl(45,93%,47%)]/5 text-[hsl(45,93%,47%)] flex items-center justify-center text-sm font-bold border border-[hsl(45,93%,47/)]/30">3</div>
+                      <h4 className="font-bold text-sm">Decrypt</h4>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed text-xs pl-11">
+                      Upload encrypted file and enter password to decrypt.
+                    </p>
+                  </div>
                 </div>
-                <p className="text-muted-foreground leading-relaxed">
-                  Upload a file and recipient's public key. Get an encrypted JSON envelope with SHA-256 fingerprint.
-                </p>
-              </div>
-              <div className="group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[hsl(142,76%,45%)]/20 to-[hsl(142,76%,45%)]/5 text-[hsl(142,76%,45%)] flex items-center justify-center text-base font-bold border border-[hsl(142,76%,45%)]/30 group-hover:glow-green transition-all">3</div>
-                  <h3 className="font-bold text-base">Decrypt</h3>
-                </div>
-                <p className="text-muted-foreground leading-relaxed">
-                  Upload encrypted envelope and your private key to recover the original file with integrity verification.
-                </p>
               </div>
             </div>
           </div>
