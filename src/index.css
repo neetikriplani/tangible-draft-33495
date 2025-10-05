@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 15% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
+
+    --primary: 195 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 10% 95%;
+    --secondary-foreground: 220 15% 15%;
+
+    --muted: 220 10% 95%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 195 100% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 195 100% 50%;
+
+    --radius: 0.75rem;
+    
+    /* Varied color palette for distinct sections */
+    --crypto-cyan: 195 100% 50%;
+    --crypto-purple: 270 70% 60%;
+    --crypto-green: 142 76% 45%;
+    --crypto-orange: 25 95% 55%;
+    --crypto-pink: 330 80% 60%;
+    
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    
+    /* Varied gradients for light background */
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 98%), hsl(25 100% 97%), hsl(0 0% 100%));
+    --gradient-cyan: linear-gradient(135deg, hsl(195 100% 50% / 0.08), hsl(195 100% 40% / 0.03));
+    --gradient-purple: linear-gradient(135deg, hsl(270 70% 60% / 0.08), hsl(270 70% 50% / 0.03));
+    --gradient-green: linear-gradient(135deg, hsl(142 76% 45% / 0.08), hsl(142 76% 35% / 0.03));
+    
+    /* Varied glows */
+    --glow-cyan: 0 0 30px hsl(195 100% 50% / 0.25);
+    --glow-purple: 0 0 30px hsl(270 70% 60% / 0.25);
+    --glow-green: 0 0 30px hsl(142 76% 45% / 0.25);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background: var(--gradient-hero);
+    min-height: 100vh;
+    font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .glow-cyan {
+    box-shadow: var(--glow-cyan);
+  }
+  
+  .glow-purple {
+    box-shadow: var(--glow-purple);
+  }
+  
+  .glow-green {
+    box-shadow: var(--glow-green);
+  }
+  
+  .animate-glow-cyan {
+    animation: glow-cyan 3s ease-in-out infinite alternate;
+  }
+  
+  .animate-glow-purple {
+    animation: glow-purple 2.5s ease-in-out infinite alternate;
+  }
+  
+  .animate-glow-green {
+    animation: glow-green 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes glow-cyan {
+    from {
+      box-shadow: 0 0 15px hsl(195 100% 50% / 0.3);
+    }
+    to {
+      box-shadow: 0 0 35px hsl(195 100% 50% / 0.6);
+    }
+  }
+  
+  @keyframes glow-purple {
+    from {
+      box-shadow: 0 0 15px hsl(270 70% 60% / 0.3);
+    }
+    to {
+      box-shadow: 0 0 35px hsl(270 70% 60% / 0.6);
+    }
+  }
+  
+  @keyframes glow-green {
+    from {
+      box-shadow: 0 0 15px hsl(142 76% 45% / 0.3);
+    }
+    to {
+      box-shadow: 0 0 35px hsl(142 76% 45% / 0.6);
+    }
+  }
+  
+  .card-tilt {
+    transition: transform 0.3s ease;
+  }
+  
+  .card-tilt:hover {
+    transform: perspective(1000px) rotateX(2deg) rotateY(-2deg);
+  }
+}
