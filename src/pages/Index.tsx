@@ -4,6 +4,7 @@ import { Shield, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { KeyGeneration } from "@/components/KeyGeneration";
 import { FileEncryption } from "@/components/FileEncryption";
 import { FileDecryption } from "@/components/FileDecryption";
@@ -77,6 +78,7 @@ const Index = () => {
             <span className="text-sm text-muted-foreground">
               Welcome, {user.email}
             </span>
+            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />
               Logout
